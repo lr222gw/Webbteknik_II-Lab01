@@ -2,8 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="66487a40-0c52-470c-8d8e-9d39c8dd3e1d" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/index.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/index.php" afterPath="$PROJECT_DIR$/index.php" />
     </list>
     <ignored path="Webbteknik_II-Lab01.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -29,7 +28,7 @@
       <file leaf-file-name="index.php" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/index.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="14" column="4" selection-start="294" selection-end="294" vertical-scroll-proportion="0.33147633" vertical-offset="0" max-vertical-offset="718">
+            <state line="25" column="115" selection-start="813" selection-end="813" vertical-scroll-proportion="0.591922" vertical-offset="0" max-vertical-offset="718">
               <folding>
                 <element signature="e#6#86#0" expanded="true" />
               </folding>
@@ -186,7 +185,7 @@
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/index.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="14" column="4" selection-start="294" selection-end="294" vertical-scroll-proportion="0.33147633" vertical-offset="0" max-vertical-offset="718">
+        <state line="25" column="115" selection-start="813" selection-end="813" vertical-scroll-proportion="0.591922" vertical-offset="0" max-vertical-offset="718">
           <folding>
             <element signature="e#6#86#0" expanded="true" />
           </folding>
