@@ -23,5 +23,25 @@ function doCurlGetRequest($url){
     return $data;// returnerar html-datan.
 }
 
-$stuff = doCurlGetRequest("http://coursepress.lnu.se/kurser/"); //Noterade att "/"-tecknet på slutet var viktigt...
-var_dump($stuff);
+function scrapeOnCoursepress($data){//Designar en unik skrapa för coursepress (då den har id/classer som är unika för sidan).
+
+    $dom = new DOMDocument(); //skapar min Dom
+    if($dom->loadHTML($data)){ // Om if lyckas så är datan som skickas in giltig, då används den datan i samband med vår dom.
+
+        $xpath = new DOMXPath($dom);
+
+        $nodeList = $xpath->query('//ul[@id = "blogs-list"]/li//a'); // en ganska rätt beskrivning som ger mig
+    }
+
+    return $nodeList;
+
+}
+
+
+$data = doCurlGetRequest("http://coursepress.lnu.se/kurser/"); //Noterade att "/"-tecknet på slutet var viktigt...od och synkronisera denna till GitHub.
+$scrpedDataNodeList = scrapeOnCoursepress($data);
+echo $data;
+foreach($scrpedDataNodeList as $aa){
+    echo $aa->nodeValue . "<br />";
+}
+var_dump($scrpedDataNodeList);
