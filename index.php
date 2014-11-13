@@ -64,14 +64,37 @@ function scrapeRest($scrpedDataArray){
         if(preg_match($regex, $scrpedDataArray[$i]->getAttribute("href")) === 1){ //En spärr som ser till att vi bara tar kurser och inte andra saker...
             $arrayToJson[$i]["Name"] = $scrpedDataArray[$i]->nodeValue;
             $arrayToJson[$i]["Url"] = $scrpedDataArray[$i]->getAttribute("href");
-            getLastInformation($arrayToJson[$i]["Url"]);
+            $extraInfoArr = getLastInformation($arrayToJson[$i]["Url"]);
+
+            if(isset($extraInfoArr["courseID"])){
+                $arrayToJson[$i]["courseID"] = $extraInfoArr["courseID"];
+            }else{$arrayToJson[$i]["courseID"] = "no information";}
+
+            if(isset($extraInfoArr["courseplanLink"])){
+                $arrayToJson[$i]["courseplanLink"] = $extraInfoArr["courseplanLink"];
+            }else{$arrayToJson[$i]["courseplanLink"] = "no information";}
+
+            if(isset($extraInfoArr["courseIntroText"])){
+                $arrayToJson[$i]["courseIntroText"] = $extraInfoArr["courseIntroText"];
+            }else{$arrayToJson[$i]["courseIntroText"] = "no information";}
+
+            if(isset($extraInfoArr["latestPost"])){
+                $arrayToJson[$i]["latestPost"] = $extraInfoArr["latestPost"];
+            }else{$arrayToJson[$i]["latestPost"] = "no information";}
+
+            if(isset($extraInfoArr["courseID"])){
+                $arrayToJson[$i]["courseID"] = $extraInfoArr["courseID"];
+            }else{$arrayToJson[$i]["courseID"] = "no information";}
 
         }
     }
 
+    
+
     echo "<pre>";
     var_dump($arrayToJson);
     echo "</pre>";
+
 }
 function getLastInformation($urlToCourse){
     $arrayToreturn = [];
@@ -93,32 +116,38 @@ function getLastInformation($urlToCourse){
 
         }
 
-        $courseplanlink = $xpath->query('//ul[@id = "menu-main-nav-menu"]//li/a');
+        $courseplanlink = $xpath->query('//ul[@id = "menu-main-nav-menu"]//li/a | //ul[@id = "menu-svensk-meny"]//li/ul/li/a | //ul[@id = "menu-huvudmeny"]//li/ul/li/a');
         foreach($courseplanlink as $courseCode){
             if($courseCode->nodeValue === "Kursplan"){
                 $arrayToreturn["courseplanLink"] = $courseCode->getAttribute("href");
             }
         }
 
-        $courseIntro = $xpath->query('//article[@id = "post-3"]');
+        $courseIntro = $xpath->query('//div[@id = "content"]/article[1] | //section[@id = "content"]/article[1]' );
         foreach($courseIntro as $courseCode){
-
-            $arrayToreturn["courseIntroText"] .= $courseCode->nodeValue;
-
-        }
-        $courseIntro = $xpath->query('//article[@id = "post-3"]');
-        foreach($courseIntro as $courseCode){
-
+            $arrayToreturn["courseIntroText"] = "";
             $arrayToreturn["courseIntroText"] .= $courseCode->nodeValue;
 
         }
 
+        $courseIntro = $xpath->query('//section[@id = "content"]/article[2]/header/h1 | //div[@id = "content"]/section/article[1]/header/h1 ' );
+        foreach($courseIntro as $courseCode){
+            $arrayToreturn["latestPost"]["Title"] = $courseCode->nodeValue;
+
+        }
+        $courseIntro = $xpath->query('//section[@id = "content"]/article[2]/header/p | //div[@id = "content"]/section/article[1]/header/h1 ');
+        foreach($courseIntro as $courseCode){
+            $arrayToreturn["latestPost"]["AuthorAndTime"] = $courseCode->nodeValue;
+
+        }
+
+        /*echo "<pre>";
         var_dump($arrayToreturn);
-        die();
+        echo "</pre>";*/
 
 
     }
-
+    return $arrayToreturn;
 
 }
 libxml_use_internal_errors(true); // OBS DENNA används för att se till att jag inte får massor felmeddelanden... för saker jag inte förstår...
