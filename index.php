@@ -64,14 +64,64 @@ function scrapeRest($scrpedDataArray){
         if(preg_match($regex, $scrpedDataArray[$i]->getAttribute("href")) === 1){ //En spärr som ser till att vi bara tar kurser och inte andra saker...
             $arrayToJson[$i]["Name"] = $scrpedDataArray[$i]->nodeValue;
             $arrayToJson[$i]["Url"] = $scrpedDataArray[$i]->getAttribute("href");
+            getLastInformation($arrayToJson[$i]["Url"]);
+
         }
     }
 
     echo "<pre>";
     var_dump($arrayToJson);
     echo "</pre>";
+}
+function getLastInformation($urlToCourse){
+    $arrayToreturn = [];
+
+    $data = doCurlGetRequest($urlToCourse);
+    $dom = new DOMDocument();
+
+    $test = true;//
+
+    $dom->loadHTML($data);
+
+    if($test){ // Här skulle egentligen "$dom->loadHTML($data)" stå, av någon anledning så får jag problem.. (?)
+        $xpath = new DOMXPath($dom);
+
+        $courseCode = $xpath->query('//div[@id = "header-wrapper"]//li[last()]/a');
+        //$arrayToreturn["courseID"] = $courseCode->nodeValue;
+        foreach($courseCode as $courseCode){
+            $arrayToreturn["courseID"] = $courseCode->nodeValue;
+
+        }
+
+        $courseplanlink = $xpath->query('//ul[@id = "menu-main-nav-menu"]//li/a');
+        foreach($courseplanlink as $courseCode){
+            if($courseCode->nodeValue === "Kursplan"){
+                $arrayToreturn["courseplanLink"] = $courseCode->getAttribute("href");
+            }
+        }
+
+        $courseIntro = $xpath->query('//article[@id = "post-3"]');
+        foreach($courseIntro as $courseCode){
+
+            $arrayToreturn["courseIntroText"] .= $courseCode->nodeValue;
+
+        }
+        $courseIntro = $xpath->query('//article[@id = "post-3"]');
+        foreach($courseIntro as $courseCode){
+
+            $arrayToreturn["courseIntroText"] .= $courseCode->nodeValue;
+
+        }
+
+        var_dump($arrayToreturn);
+        die();
+
+
+    }
+
 
 }
+libxml_use_internal_errors(true); // OBS DENNA används för att se till att jag inte får massor felmeddelanden... för saker jag inte förstår...
 $baseUrl = "http://coursepress.lnu.se";
 $url = "http://coursepress.lnu.se/kurser/";//"https://coursepress.lnu.se/kurser/?bpage=5";
 $data = doCurlGetRequest($url); //Noterade att "/"-tecknet på slutet var viktigt...od och synkronisera denna till GitHub.
