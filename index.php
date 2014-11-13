@@ -32,7 +32,7 @@ function scrapeOnCoursepress($data, $baseUrl){//Designar en unik skrapa för cou
         $xpath = new DOMXPath($dom);
         $nodeList = new DOMNodeList();
 
-        $nodeList = $xpath->query('//ul[@id = "blogs-list"]/li//a'); // en ganska rätt beskrivning som ger mig
+        $nodeList = $xpath->query('//ul[@id = "blogs-list"]/li//div[@class = "item-title"]/a'); // en ganska rätt beskrivning som ger mig
 
         foreach($nodeList as $node){// Låter mig göra om från list till array...
             $arrayWithNodes[] = $node;
@@ -57,10 +57,28 @@ function scrapeOnCoursepress($data, $baseUrl){//Designar en unik skrapa för cou
     }
     return $arrayWithNodes;
 }
+function scrapeRest($scrpedDataArray){
+    $arrayToJson = [];
+    for($i=0; $i<count($scrpedDataArray);$i++ ){
+        $regex = '/http:\/\/coursepress.lnu.se\/kurs\/\w*/';
+        if(preg_match($regex, $scrpedDataArray[$i]->getAttribute("href")) === 1){ //En spärr som ser till att vi bara tar kurser och inte andra saker...
+            $arrayToJson[$i]["Name"] = $scrpedDataArray[$i]->nodeValue;
+            $arrayToJson[$i]["Url"] = $scrpedDataArray[$i]->getAttribute("href");
+        }
+    }
+
+    echo "<pre>";
+    var_dump($arrayToJson);
+    echo "</pre>";
+
+}
 $baseUrl = "http://coursepress.lnu.se";
 $url = "http://coursepress.lnu.se/kurser/";//"https://coursepress.lnu.se/kurser/?bpage=5";
 $data = doCurlGetRequest($url); //Noterade att "/"-tecknet på slutet var viktigt...od och synkronisera denna till GitHub.
 
-$scrpedDataNodeList = scrapeOnCoursepress($data,$baseUrl);
+$scrpedDataArray = scrapeOnCoursepress($data,$baseUrl);
+
+scrapeRest($scrpedDataArray);
+
 echo $data;
-var_dump($scrpedDataNodeList);
+//var_dump($scrpedDataArray);
