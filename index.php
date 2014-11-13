@@ -89,12 +89,16 @@ function scrapeRest($scrpedDataArray){
         }
     }
 
-    
+    $timeStamp = time();
+    $numberOfCourses = count($arrayToJson); //Varför blir denna inte rätt? säger 68 när den borde säga 80... (?)
+    $arrayToJson["timestamp"] = $timeStamp;
+    $arrayToJson["howManyCourses"] = $numberOfCourses;
+    $arrayToJson = json_encode($arrayToJson);
 
-    echo "<pre>";
-    var_dump($arrayToJson);
-    echo "</pre>";
-
+    $fp= fopen('myJsondataScrape.json','w');
+    fwrite($fp,$arrayToJson);
+    fclose($fp);
+    return;
 }
 function getLastInformation($urlToCourse){
     $arrayToreturn = [];
@@ -150,14 +154,43 @@ function getLastInformation($urlToCourse){
     return $arrayToreturn;
 
 }
-libxml_use_internal_errors(true); // OBS DENNA används för att se till att jag inte får massor felmeddelanden... för saker jag inte förstår...
-$baseUrl = "http://coursepress.lnu.se";
-$url = "http://coursepress.lnu.se/kurser/";//"https://coursepress.lnu.se/kurser/?bpage=5";
-$data = doCurlGetRequest($url); //Noterade att "/"-tecknet på slutet var viktigt...od och synkronisera denna till GitHub.
+function checkCache(){
 
-$scrpedDataArray = scrapeOnCoursepress($data,$baseUrl);
+    $file =  file_get_contents("myJsondataScrape.json");
 
-scrapeRest($scrpedDataArray);
+    $CacheTime = 60*5; // detta är sekunder... trodde jag höll på med millisekunder... så 60*5 sekunder = 5 minuter
 
-echo $data;
+    $file = json_decode($file, true); //true för att denska returenras som en array...
+    if($file["timestamp"]+ $CacheTime > time() ){
+        echo "Timestamp: " . ($file["timestamp"]+ $CacheTime) . "</ br>";
+        echo "Time: ".time();
+
+        return false;
+    }
+
+    return true;
+
+}
+function starter(){
+    $baseUrl = "http://coursepress.lnu.se";
+    $url = "http://coursepress.lnu.se/kurser/";//"https://coursepress.lnu.se/kurser/?bpage=5";
+    if(checkCache()){
+        $data = doCurlGetRequest($url); //Noterade att "/"-tecknet på slutet var viktigt...od och synkronisera denna till GitHub.
+        $fresherData = scrapeOnCoursepress($data,$baseUrl);
+        scrapeRest($fresherData);
+    }
+
+
+    $file =  file_get_contents("myJsondataScrape.json");
+    $file = json_decode($file, true); //true för att denska returenras som en array...;
+
+    echo "<pre>";
+        var_dump($file);
+    echo "</pre>";
+
 //var_dump($scrpedDataArray);
+}
+libxml_use_internal_errors(true); // OBS DENNA används för att se till att jag inte får massor felmeddelanden... för saker jag inte förstår...
+starter();
+
+
