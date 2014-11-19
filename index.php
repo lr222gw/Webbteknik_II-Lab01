@@ -15,6 +15,7 @@ function doCurlGetRequest($url){
 
         curl_setopt($ch,CURLOPT_URL, $url); //Anger vilken adress vår handler som hantera...
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); //Vi ställer in handlern på att inte skriva ut datan när den har hämtat den.
+        curl_setopt($ch, CURLOPT_USERAGENT, "Lowe Raivio: lr222gw@student.lnu.se");
 
         $data = curl_exec($ch);
 
@@ -158,7 +159,7 @@ function checkCache(){
 
     $file =  file_get_contents("myJsondataScrape.json");
 
-    $CacheTime = 60*5; // detta är sekunder... trodde jag höll på med millisekunder... så 60*5 sekunder = 5 minuter
+    $CacheTime = 60*5; // detta är sekunder... trodde jag höll på med millisekunder... så 60*5 sekunder = 5 minuterag
 
     $file = json_decode($file, true); //true för att denska returenras som en array...
     if($file["timestamp"]+ $CacheTime > time() ){
